@@ -45,6 +45,31 @@ install_nvim_tarball() {
     esac
 }
 
+install_tree_sitter_cli() {
+    # nvim-treesitter (main branch) shells out to the tree-sitter CLI to
+    # build parsers — without it every :TSInstall fails with ENOENT
+    command -v tree-sitter >/dev/null 2>&1 && return 0
+    local arch os asset
+    case "$(uname -m)" in
+    x86_64) arch="x64" ;;
+    aarch64 | arm64) arch="arm64" ;;
+    *)
+        warn "unknown arch — install tree-sitter CLI manually (npm i -g tree-sitter-cli)"
+        return 1
+        ;;
+    esac
+    case "$(uname -s)" in
+    Darwin) os="macos" ;;
+    Linux) os="linux" ;;
+    esac
+    asset="tree-sitter-${os}-${arch}.gz"
+    bold "Installing tree-sitter CLI to ~/.local/bin"
+    mkdir -p "${HOME}/.local/bin"
+    curl -fsSL "https://github.com/tree-sitter/tree-sitter/releases/latest/download/${asset}" |
+        gunzip >"${HOME}/.local/bin/tree-sitter"
+    chmod +x "${HOME}/.local/bin/tree-sitter"
+}
+
 install_nerd_font_linux() {
     if fc-list 2>/dev/null | grep -qi "JetBrainsMono Nerd"; then return 0; fi
     bold "Installing JetBrainsMono Nerd Font to ~/.local/share/fonts"
@@ -71,7 +96,7 @@ Darwin)
         exit 1
     }
     bold "Installing dependencies (brew)"
-    for pkg in neovim ripgrep fd node gh lazygit; do
+    for pkg in neovim tree-sitter ripgrep fd node gh lazygit; do
         brew list "$pkg" >/dev/null 2>&1 || brew install "$pkg" || warn "$pkg failed — install manually"
     done
     brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1 ||
@@ -90,6 +115,7 @@ Linux)
         warn "unknown package manager — ensure git, curl, ripgrep, node, gcc are installed"
     fi
     nvim_ok || install_nvim_tarball
+    install_tree_sitter_cli
     install_nerd_font_linux
     command -v gh >/dev/null 2>&1 || warn "gh CLI not installed — needed only for :Octo PR review (https://cli.github.com)"
     command -v lazygit >/dev/null 2>&1 || warn "lazygit not installed — optional (https://github.com/jesseduffield/lazygit)"
@@ -111,7 +137,7 @@ nvim_ok || {
 
 bold "Preflight check"
 missing=0
-for tool in git curl tar gzip unzip cc node npm rg; do
+for tool in git curl tar gzip unzip cc node npm rg tree-sitter; do
     if command -v "$tool" >/dev/null 2>&1; then
         printf '  ok       %s\n' "$tool"
     else
@@ -124,6 +150,8 @@ if [ "$missing" -eq 1 ]; then
 
 Missing tools above will cause exactly these failures later:
   - no cc            -> treesitter parser builds fail with ENOENT
+  - no tree-sitter   -> same ENOENT (parser generation needs the CLI;
+                        macOS: brew install tree-sitter)
   - no node/npm      -> pyright, ts_ls, bashls, jsonls, yamlls won't install
   - no unzip/tar     -> mason can't unpack stylua, shfmt, and other binaries
 Install them (apt/dnf/pacman/brew) and re-run.

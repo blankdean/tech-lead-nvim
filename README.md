@@ -180,9 +180,23 @@ last known-good commit. That's the whole point of committing the lock file.
 
 ## Troubleshooting
 
-**Treesitter build fails with `ENOENT`** — no C compiler. Parsers compile
-locally. macOS: `xcode-select --install`. Linux: `apt install gcc` (or dnf/pacman
-equivalent). Then `:TSUpdate`.
+**Treesitter build fails with `ENOENT`** — a build tool is missing. Parsers
+compile locally and need BOTH a C compiler and the `tree-sitter` CLI:
+
+- macOS: `xcode-select --install` and `brew install tree-sitter`
+- Linux: `apt install gcc` (or dnf/pacman equivalent); the install script
+  downloads the tree-sitter CLI automatically
+
+Then `:TSUpdate` inside nvim.
+
+**Plugin errors like `module '…' not found` after failed installs** (e.g.
+`async_job not found` when opening telescope) — a plugin was half-cloned when
+an earlier install died. Reset plugins to the pinned lock file:
+
+```sh
+rm -rf ~/.local/share/nvim/lazy
+nvim --headless "+Lazy! restore" +qa
+```
 
 **Mason can't install stylua / shfmt / servers** — three usual suspects:
 
