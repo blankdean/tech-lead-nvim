@@ -138,7 +138,9 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Load plugins from lua/plugins/
 require("lazy").setup("plugins", {
-    checker = { enabled = true, notify = false },
+    -- No background update polling (quiet on corporate networks);
+    -- update manually with :Lazy update — see README "Keeping everything up to date"
+    checker = { enabled = false },
     change_detection = { notify = false },
     -- No installed plugin needs luarocks; disabling avoids the hererocks
     -- bootstrap and its :checkhealth errors

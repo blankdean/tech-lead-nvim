@@ -178,6 +178,47 @@ If something breaks after an update: `:Lazy log` shows what changed, and
 `git checkout lazy-lock.json && :Lazy restore` rolls every plugin back to the
 last known-good commit. That's the whole point of committing the lock file.
 
+## Troubleshooting
+
+**Treesitter build fails with `ENOENT`** — no C compiler. Parsers compile
+locally. macOS: `xcode-select --install`. Linux: `apt install gcc` (or dnf/pacman
+equivalent). Then `:TSUpdate`.
+
+**Mason can't install stylua / shfmt / servers** — three usual suspects:
+
+1. Missing `unzip` or `tar` (mason unpacks release archives) — install them.
+2. Missing `node`/`npm` (pyright, ts_ls, bashls, jsonls, yamlls are npm
+   packages) — install node.
+3. **Corporate proxy** blocking GitHub/npm downloads:
+   ```sh
+   export HTTPS_PROXY=http://proxy.yourcompany.com:PORT   # add to your shell rc
+   git config --global http.proxy "$HTTPS_PROXY"
+   npm config set proxy "$HTTPS_PROXY"
+   ```
+
+`:checkhealth mason` shows exactly what mason can and can't find.
+Re-running `install.sh` prints a preflight report of every required tool.
+
+**Diagnose anything**: `:checkhealth`, `:Lazy log`, `:messages`.
+
+## Security posture
+
+Built to be safe on a work machine:
+
+- **Every plugin is a mainstream community standard** — 750 to 21k+ GitHub
+  stars, most actively maintained (folke, telescope, treesitter core teams).
+  No obscure or single-user dependencies.
+- **Versions are pinned** — `lazy-lock.json` commits exact tested commits;
+  a fresh install gets those, not whatever HEAD is that day.
+- **No telemetry, no background network calls** — the update checker is
+  disabled; nothing phones home. Network happens only when you run
+  `:Lazy update` / `:Mason` yourself.
+- **Binaries come from official sources only** — mason's registry pulls LSP
+  servers and formatters from their official GitHub releases / npm packages.
+  Same supply chain as `npm install` / `pip install`.
+- Minimal plugin count: built-in features are preferred where they exist
+  (native commenting, native LSP keymaps).
+
 ## Notes
 
 - `lazy-lock.json` is committed — fresh installs get the exact tested plugin

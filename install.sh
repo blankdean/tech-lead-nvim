@@ -64,6 +64,12 @@ Darwin)
         echo "Homebrew required on macOS: https://brew.sh"
         exit 1
     }
+    xcode-select -p >/dev/null 2>&1 || {
+        bold "Xcode Command Line Tools required (C compiler for treesitter)"
+        xcode-select --install
+        echo "Finish the CLT install dialog, then re-run this script."
+        exit 1
+    }
     bold "Installing dependencies (brew)"
     for pkg in neovim ripgrep fd node gh lazygit; do
         brew list "$pkg" >/dev/null 2>&1 || brew install "$pkg" || warn "$pkg failed — install manually"
@@ -98,6 +104,39 @@ nvim_ok || {
     echo "neovim >= 0.${NVIM_MIN_MINOR} required — install it and re-run"
     exit 1
 }
+
+# --- preflight doctor -------------------------------------------------------
+# Everything nvim needs at runtime: cc compiles treesitter parsers, node runs
+# several LSP servers, curl+tar+gzip+unzip let mason download tool binaries.
+
+bold "Preflight check"
+missing=0
+for tool in git curl tar gzip unzip cc node npm rg; do
+    if command -v "$tool" >/dev/null 2>&1; then
+        printf '  ok       %s\n' "$tool"
+    else
+        printf '  MISSING  %s\n' "$tool"
+        missing=1
+    fi
+done
+if [ "$missing" -eq 1 ]; then
+    cat <<'EOF'
+
+Missing tools above will cause exactly these failures later:
+  - no cc            -> treesitter parser builds fail with ENOENT
+  - no node/npm      -> pyright, ts_ls, bashls, jsonls, yamlls won't install
+  - no unzip/tar     -> mason can't unpack stylua, shfmt, and other binaries
+Install them (apt/dnf/pacman/brew) and re-run.
+EOF
+    exit 1
+fi
+
+if ! curl -fsSL -m 10 https://api.github.com/zen >/dev/null 2>&1; then
+    warn "cannot reach github.com — corporate proxy? Set proxy env vars first:"
+    warn '  export HTTPS_PROXY=http://proxy.yourcompany.com:PORT'
+    warn '  git config --global http.proxy $HTTPS_PROXY'
+    warn "plugin and LSP downloads will fail until this works"
+fi
 
 # --- config ----------------------------------------------------------------
 
