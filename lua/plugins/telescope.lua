@@ -1,6 +1,7 @@
 return {
     "nvim-telescope/telescope.nvim",
-    branch = "0.1.x",
+    -- master, not 0.1.x: the release branch predates the nvim-treesitter
+    -- main-branch rewrite and crashes previewers (ft_to_lang removed)
     cmd = "Telescope",
     dependencies = {
         "nvim-lua/plenary.nvim",
