@@ -164,6 +164,20 @@ Add [`tmux-navigator.snippet.conf`](tmux-navigator.snippet.conf) to your
 seamlessly. Suggested layout: nvim in the main pane, a slim bottom pane for
 server/tests — `Ctrl-j` to peek at logs, `Ctrl-k` back to code.
 
+## Keeping everything up to date
+
+| What | How | When |
+|------|-----|------|
+| Plugins | `:Lazy update` | Weekly-ish. Updates `lazy-lock.json` — commit it so other machines get the same versions |
+| LSP servers & formatters | `:Mason`, then press `U` (update all) | When you notice a server lagging behind |
+| Treesitter parsers | `:TSUpdate` | After plugin updates, and always after upgrading Neovim itself |
+| Neovim | `brew upgrade neovim` (macOS) · re-run `install.sh` (Linux tarball installs) | When a new stable lands |
+| This config | `cd ~/.config/nvim && git pull` | Whenever you've pushed changes from another machine |
+
+If something breaks after an update: `:Lazy log` shows what changed, and
+`git checkout lazy-lock.json && :Lazy restore` rolls every plugin back to the
+last known-good commit. That's the whole point of committing the lock file.
+
 ## Notes
 
 - `lazy-lock.json` is committed — fresh installs get the exact tested plugin
