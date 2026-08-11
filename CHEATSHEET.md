@@ -40,8 +40,98 @@ fuzzy-find everything else with Telescope.**
 | `]d` / `[d` | Next / previous diagnostic |
 | `]h` / `[h` | Next / previous git hunk |
 | `]t` / `[t` | Next / previous TODO comment |
-| `Ctrl-d` / `Ctrl-u` | Half-page down / up (keeps cursor centered enough with scrolloff) |
+| `Ctrl-d` / `Ctrl-u` | Half-page down / up, cursor auto-centered |
+| `{` / `}` | Jump by paragraph / block |
+| `12j` / `12k` | Jump N lines — read N off the relative line numbers |
 | `%` | Jump between matching brackets |
+
+## Splits & simultaneous editing
+
+| Key | What it does |
+|-----|--------------|
+| `<Space>\|` | Vertical split (same key as tmux) |
+| `<Space>-` | Horizontal split |
+| `Ctrl-h/j/k/l` | Move between splits (and tmux panes) |
+| `Ctrl-arrows` | Resize the current split |
+| `:e file` | Open another file in this split |
+
+Two files side by side: `<Space>|`, then `<Space>ff` in the new split.
+
+## Marks — breadcrumbs
+
+| Key | What it does |
+|-----|--------------|
+| `ma` | Drop mark `a` here (any letter) |
+| `` `a `` | Jump back to mark `a` (exact position) |
+| `'a` | Jump to mark `a`'s line (first character) |
+| `mA` | Capital = global mark, works **across files** |
+| `` ` ` `` | Bounce between your last two positions |
+| `:marks` | List all marks |
+
+Marks are for "check something over there, come right back." For files you
+revisit all day, harpoon (`<Space>a`) is the better tool.
+
+## Text objects — surgical edits
+
+Pattern: `{operator}{i|a}{object}` — `i` = inside, `a` = around (includes delimiters).
+Operators: `c` change, `d` delete, `y` yank, `v` select.
+
+| Key | What it does |
+|-----|--------------|
+| `ci"` / `ci'` | Change inside quotes |
+| `ci(` / `ci{` / `ci[` | Change inside brackets |
+| `cit` | Change inside HTML/JSX tag |
+| `ciw` | Change word under cursor |
+| `caw` | Change word + surrounding space |
+| `cip` / `dap` | Change / delete paragraph |
+| `yi(` | Yank inside parens |
+| `va{` | Select block including braces |
+
+Replace a word everywhere, reviewed: `*` (search word) → `ciw` new word `Esc` →
+`n` (next match) → `.` (repeat change) → keep going. For symbols, prefer
+`grn` — LSP rename is scope-aware and project-wide in one shot.
+
+Surround (nvim-surround): `ysiw"` wrap word in quotes · `ys$)` wrap to end of
+line in parens · `cs"'` change `"` to `'` · `cst<div>` change tag · `ds(` delete
+parens. Visual mode: select then `S"`.
+
+## Visual mode & clipboard
+
+| Key | What it does |
+|-----|--------------|
+| `v` | Character select |
+| `V` | Line select |
+| `Ctrl-v` | Block (column) select |
+| `Ctrl-v` … `I` | Insert at start of every selected line (Esc to apply) |
+| `Ctrl-v` … `$ A` | Append at end of every selected line |
+| `J` / `K` (visual) | Move selection down / up |
+| `gv` | Reselect last selection |
+| `o` (in visual) | Jump to other end of selection |
+
+Clipboard is system-wide (`unnamedplus`): `y` copies to your OS clipboard,
+`p` pastes from it. `"0p` pastes the last *yank* even after a delete clobbered
+the default register. `:reg` shows everything you've copied.
+
+## Macros — record once, apply everywhere
+
+| Key | What it does |
+|-----|--------------|
+| `.` | Repeat last edit (the most underrated key in vim) |
+| `qq` | Start recording into register `q` |
+| `q` | Stop recording |
+| `@q` | Replay macro |
+| `20@q` | Replay 20 times |
+| `@@` | Replay the last-used macro |
+
+Recipe: record one perfect line-transformation (`qq` … edits … `j0q` — end on
+the next line so replays chain), then `20@q`.
+
+## Snippets / templates
+
+Type a prefix (`def`, `for`, `if`, `main`…) — snippets appear in the completion
+menu with a snippet icon. `Enter` expands, `Tab` / `Shift-Tab` hop between
+placeholders. friendly-snippets covers every major language. Custom ones:
+VS Code-format JSON in `~/.config/nvim/snippets/`.
 
 ## Working a large codebase
 

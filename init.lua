@@ -71,6 +71,16 @@ map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
 map("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
 map("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
 
+-- Splits (mirrors tmux: | vertical, - horizontal)
+map("n", "<leader>|", ":vsplit<CR>", { desc = "Split vertical" })
+map("n", "<leader>-", ":split<CR>", { desc = "Split horizontal" })
+
+-- Keep the cursor centered on big jumps and search hops
+map("n", "<C-d>", "<C-d>zz", { desc = "Half page down (centered)" })
+map("n", "<C-u>", "<C-u>zz", { desc = "Half page up (centered)" })
+map("n", "n", "nzzzv", { desc = "Next match (centered)" })
+map("n", "N", "Nzzzv", { desc = "Previous match (centered)" })
+
 -- Clear search highlights
 map("n", "<Esc>", ":nohlsearch<CR>", { desc = "Clear search highlights" })
 
