@@ -44,6 +44,12 @@ opt.incsearch = true
 opt.splitbelow = true
 opt.splitright = true
 
+-- Folding: treesitter-aware (functions/classes/blocks fold as real units)
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldlevelstart = 99 -- open everything when a file loads; fold on demand
+opt.foldtext = "" -- keep the first line syntax-highlighted instead of "+-- 12 lines"
+
 opt.clipboard = "unnamedplus"
 opt.mouse = "a"
 opt.termguicolors = true

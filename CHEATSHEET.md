@@ -61,6 +61,22 @@ fuzzy-find everything else with Telescope.**
 | `12j` / `12k` | Jump N lines — read N off the relative line numbers |
 | `%` | Jump between matching brackets |
 
+## Folding — collapse functions/classes
+
+Folds follow real code structure (treesitter), not indentation guesses.
+
+| Key | What it does |
+|-----|--------------|
+| `zM` | Collapse everything — file becomes a table of contents of `def`s |
+| `zR` | Expand everything back |
+| `za` | Toggle the fold under the cursor |
+| `zo` / `zc` | Open / close the fold under the cursor |
+| `zj` / `zk` | Jump to next / previous fold |
+| `:set foldlevel=1` | Keep top level (class) open, collapse its methods |
+
+Skim-a-big-file recipe: `zM` to see just the function signatures, `zj` down the
+list, `zo` open the one you care about.
+
 ## Splits & simultaneous editing
 
 | Key | What it does |
