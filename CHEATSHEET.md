@@ -3,6 +3,9 @@
 Leader is `Space`. Press `Space` and wait — which-key pops up and shows everything.
 This file covers the workflows, not every key.
 
+**Mac**: `Ctrl` always means **Control (⌃)**, never Command (⌘). Command
+belongs to your terminal app, not nvim.
+
 ## Moving between files (the core loop)
 
 The fastest way to work in a big codebase is: **pin your hot files with Harpoon,
@@ -11,7 +14,7 @@ fuzzy-find everything else with Telescope.**
 | Key | What it does |
 |-----|--------------|
 | `<Space>a` | Harpoon: pin the current file |
-| `Ctrl-1` … `Ctrl-4` | Jump straight to pinned file 1–4 |
+| `<Space>1` … `<Space>4` | Jump straight to pinned file 1–4 (`Ctrl-1..4` also works in Ghostty/kitty/WezTerm) |
 | `<Space>hh` | Harpoon menu (reorder / remove pins) |
 | `<Space>ff` | Find file by name (fuzzy) |
 | `<Space>fg` | Live grep — search file *contents* across the repo |
@@ -153,7 +156,7 @@ VS Code-format JSON in `~/.config/nvim/snippets/`.
 2. **Trace**: `gd` into definitions, `Ctrl-o` to walk back out. `grr` to see
    every caller before you change a signature.
 3. **Pin**: the 3–4 files you're actively editing go in Harpoon (`<Space>a`),
-   then `Ctrl-1..4` bounces between them with zero friction.
+   then `<Space>1..4` bounces between them with zero friction.
 4. **Audit**: `<Space>xx` opens Trouble — every diagnostic in the workspace in
    one list. `<Space>ft` lists every TODO/FIXME.
 5. **Bulk edit**: Telescope grep → `Ctrl-q` to quickfix → `:cdo s/old/new/gc | update`.

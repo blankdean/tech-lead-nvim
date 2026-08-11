@@ -32,10 +32,14 @@ Font** and run `nvim`. That's it.
 
 Leader is `Space`. Press it and pause — which-key shows you everything.
 
+> **Mac users**: every shortcut here means **Control (⌃)**, never Command (⌘).
+> `Ctrl-h` = hold ⌃ and press h. Command stays with your terminal app
+> (⌘C, ⌘T, ⌘Q work as usual).
+
 | Key | Does |
 |-----|------|
 | `Space ff` / `Space fg` | Find file by name / grep entire repo |
-| `Space a` → `Ctrl-1..4` | Pin file → jump to pin (harpoon) |
+| `Space a` → `Space 1..4` | Pin file → jump to pin (harpoon) |
 | `s` + two chars | Jump to any visible text (flash) |
 | `gd` / `grr` / `Ctrl-o` | Definition / references / jump back |
 | `grn` / `gra` | Rename symbol everywhere / code action |
@@ -60,8 +64,9 @@ before you touch a signature.
 
 `Space |` and `Space -` split the window (same keys as tmux). `Ctrl-h/j/k/l`
 moves between splits — and straight out into your tmux panes, one mental model.
-Pin the 3–4 files you're living in with `Space a`, then `Ctrl-1..4` teleports
-between them. Faster than any tab bar.
+Pin the 3–4 files you're living in with `Space a`, then `Space 1..4` teleports
+between them. Faster than any tab bar. (`Ctrl-1..4` also works in terminals
+that support it — see Notes.)
 
 ### Move fast inside a file
 
@@ -254,8 +259,10 @@ Built to be safe on a work machine:
 - `lazy-lock.json` is committed — fresh installs get the exact tested plugin
   versions. `:Lazy update` when you want newer.
 - Linux clipboard needs `xclip` (X11) or `wl-clipboard` (Wayland).
-- `Ctrl-1..4` needs a modern terminal (Ghostty, kitty, WezTerm, iTerm2).
-  Fallback: `Space hh` opens the harpoon menu.
+- Harpoon jumps: `Space 1..4` works everywhere. The `Ctrl-1..4` variants only
+  work in terminals speaking the kitty keyboard protocol (Ghostty, kitty,
+  WezTerm) — macOS Terminal.app cannot send Ctrl+digit at all, and inside
+  tmux you also need `set -g extended-keys on`.
 - Broken icons? Your terminal font isn't the Nerd Font yet.
 - `:checkhealth` diagnoses everything.
 
