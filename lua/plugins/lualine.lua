@@ -4,7 +4,9 @@ return {
     config = function()
         require("lualine").setup({
             options = {
-                theme = "catppuccin",
+                -- upstream renamed the bundled theme (catppuccin -> catppuccin-nvim);
+                -- this variant follows whatever flavour catppuccin.lua sets
+                theme = "catppuccin-nvim",
                 component_separators = { left = "", right = "" },
                 section_separators = { left = "", right = "" },
             },
