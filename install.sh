@@ -185,8 +185,15 @@ nvim --headless "+Lazy! sync" +qa
 cat <<'EOF'
 
 Done. Two manual steps:
-  1. Set your terminal font to "JetBrainsMono Nerd Font".
-  2. Run: nvim   (first launch downloads the LSP servers — give it a minute)
+
+1. Set your terminal font to "JetBrainsMono Nerd Font" (fixes broken icons):
+     Terminal.app : Cmd+, -> Profiles -> Text -> Font Change... -> JetBrainsMono Nerd Font
+     iTerm2       : Cmd+, -> Profiles -> Text -> Font -> JetBrainsMono Nerd Font
+     Ghostty      : add `font-family = JetBrainsMono Nerd Font` to ~/.config/ghostty/config, restart
+     GNOME/kitty/alacritty/VS Code: set the terminal font to the same name
+   Verify (should print icons, not boxes):  echo "  "
+
+2. Run: nvim   (first launch downloads the LSP servers — give it a minute)
 
 Optional: gh auth login   (enables GitHub PR review via :Octo)
 Health check any time: nvim then :checkhealth
