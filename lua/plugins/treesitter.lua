@@ -1,9 +1,6 @@
 return {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
-    -- main now targets nvim 0.12 (nightly); this commit is verified working
-    -- on 0.11.6, so hold it here — remove `pin` after upgrading Neovim
-    pin = true,
     lazy = false,
     build = ":TSUpdate",
     config = function()
