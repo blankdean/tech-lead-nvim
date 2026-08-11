@@ -120,11 +120,27 @@ completion menu (friendly-snippets ships hundreds, every major language).
 `Enter` accepts, `Tab` hops between placeholder fields. Add your own in
 `~/.config/nvim/snippets/`.
 
-### Project-wide find & replace
+### Find & replace
 
-1. `Space fg` — grep the thing
+**In the current file** — the `:%s` substitute command:
+
+```vim
+:%s/old/new/g        " replace every occurrence in the file
+:%s/old/new/gc       " same, but confirm each with y/n
+:%s/\<log\>/trace/g  " exact word only — won't touch `login`
+:10,40s/old/new/g    " only lines 10–40
+```
+
+Searched with `/old` already? `:%s//new/g` reuses the last search. Visual-select
+first and `:s/old/new/g` replaces only inside the selection.
+
+**Across the whole project:**
+
+1. `Space fg` — grep the thing (`"word" -w` for whole-word, capitals = case-sensitive)
 2. `Ctrl-q` — dump every match into the quickfix list
 3. `:cdo s/old/new/gc | update` — apply across all files, confirming each
+
+For code symbols skip all that: `grn` renames via LSP, scope-aware, everywhere.
 
 ### Review PRs without leaving the editor
 

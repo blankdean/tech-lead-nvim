@@ -26,7 +26,20 @@ fuzzy-find everything else with Telescope.**
 - Type multiple words to narrow: `user auth` matches paths containing both.
 - `Ctrl-q` sends all results to the quickfix list — then `:cdo s/old/new/g | update`
   does a project-wide edit.
-- In live grep, ripgrep syntax works: `foo -- -g '*.py'` limits to Python files.
+
+**Live grep syntax** (`<Space>fg`):
+- Case: lowercase query = case-insensitive; ANY capital letter = case-sensitive
+  automatically (smart-case). So typing `GRPC` already matches only `GRPC`.
+- Quote for exact phrases, add ripgrep flags after the quotes:
+
+| Query | Finds |
+|-------|-------|
+| `handler` | `handler` anywhere, any case |
+| `Handler` | case-sensitive (has a capital) |
+| `"grpc" -s` | force case-sensitive even for lowercase |
+| `"cache" -w` | whole word only — not `cached` or `precache` |
+| `"def get" -t py` | phrase, Python files only |
+| `"TODO" --iglob !tests/**` | exclude a directory |
 
 ## Navigating inside a file
 

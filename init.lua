@@ -98,7 +98,9 @@ map("n", "<leader>o", ":NvimTreeFocus<CR>", { desc = "Focus file explorer" })
 
 -- Telescope
 map("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find files" })
-map("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { desc = "Live grep" })
+-- live_grep_args: plain words work as before; quotes + rg flags unlock more,
+-- e.g.  "gRPC client" -w   or   handler -t py   (see CHEATSHEET)
+map("n", "<leader>fg", "<cmd>Telescope live_grep_args<CR>", { desc = "Live grep (args)" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Find buffers" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Help tags" })
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>", { desc = "Recent files" })
