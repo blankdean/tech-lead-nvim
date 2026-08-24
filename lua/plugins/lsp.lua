@@ -78,11 +78,23 @@ return {
                 },
             })
 
+            -- No inline message trailing every line ("import x could not be
+            -- resolved"). Problems still show as gutter signs + an underline;
+            -- read the full text with <leader>ld, or <leader>ud to turn the
+            -- inline version back on for as long as you want it.
             vim.diagnostic.config({
-                virtual_text = true,
+                virtual_text = false,
+                underline = true,
+                signs = true,
                 severity_sort = true,
                 float = { border = "rounded" },
             })
+
+            vim.keymap.set("n", "<leader>ud", function()
+                local on = vim.diagnostic.config().virtual_text and true or false
+                vim.diagnostic.config({ virtual_text = not on })
+                vim.notify("Inline diagnostics " .. (on and "off" or "on"))
+            end, { desc = "Toggle inline diagnostics" })
 
             -- Buffer-local maps on attach (nvim 0.11 also ships defaults:
             -- grn rename, gra code action, grr references, K hover)

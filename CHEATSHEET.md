@@ -185,6 +185,8 @@ VS Code-format JSON in `~/.config/nvim/snippets/`.
 | `gra` | Code action (auto-import, fix, refactor) |
 | `<Space>lf` | Format file (ruff / stylua / prettier — also runs on save) |
 | `<Space>uf` | Toggle format-on-save |
+| `<Space>ld` | Read the diagnostic on this line in a float |
+| `<Space>ud` | Toggle inline diagnostic text (off by default — signs stay) |
 | `gcc` / `gc` (visual) | Comment line / selection |
 | `ysiw"` | Surround word with quotes (`cs"'` change, `ds"` delete) |
 | `J` / `K` (visual) | Move selected lines down / up |
