@@ -15,6 +15,7 @@ return {
             { "<leader>h", group = "Harpoon" },
             { "<leader>u", group = "UI toggles" },
             { "<leader>t", group = "Terminal" },
+            { "<leader>q", group = "Quit / close windows" },
         })
     end,
 }

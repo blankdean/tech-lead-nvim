@@ -234,6 +234,29 @@ diff without a full review: `:Octo pr checkout 42` then `<Space>gm`.
 slim bottom pane for the dev server / logs / tests. `Ctrl-j` down to check logs,
 `Ctrl-k` back into the editor. Zoom (`Ctrl-a z`) when you want nvim fullscreen.
 
+## Closing windows
+
+`<Space>gr` (Octo PR review) and `grr` (references) both open extra panels.
+Getting back out:
+
+| Key | What it does |
+|-----|--------------|
+| `<Space>qo` | Close every panel and split, keep just the file you're on |
+| `<Space>qq` | Quit nvim back to the shell (prompts if anything is unsaved) |
+| `<Space>qw` | Write every buffer, then quit |
+| `<Space>qQ` | Quit and throw away unsaved changes |
+| `<Ctrl-w>o` | Same as `<Space>qo`, built-in vim version |
+| `<Space>gq` | Close a diffview / Octo review layout specifically |
+
+## Terminal
+
+| Key | What it does |
+|-----|--------------|
+| `<Space>tt` | Open the terminal (from your code) |
+| `<Ctrl-/>` | Toggle the terminal from either side — code or terminal |
+| `<Esc><Esc>` | Inside the terminal: back to normal mode, so vim keys work again |
+| `q` | Inside the terminal in normal mode: hide it |
+
 ## Housekeeping
 
 - `:Lazy` — plugin manager (update / profile startup)

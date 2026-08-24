@@ -98,6 +98,13 @@ map("v", ">", ">gv", { desc = "Indent right" })
 map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line down" })
 map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
 
+-- Closing windows: back to one file, or all the way out to the shell
+-- (<Space>gr Octo review and grr references both spray windows/panels around)
+map("n", "<leader>qo", "<cmd>cclose<CR><cmd>lclose<CR><cmd>only<CR>", { desc = "Close panels/splits, keep this file" })
+map("n", "<leader>qq", "<cmd>qa<CR>", { desc = "Quit nvim (prompts if unsaved)" })
+map("n", "<leader>qw", "<cmd>wqa<CR>", { desc = "Write all, then quit nvim" })
+map("n", "<leader>qQ", "<cmd>qa!<CR>", { desc = "Quit nvim, discard changes" })
+
 -- NvimTree
 map("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
 map("n", "<leader>o", ":NvimTreeFocus<CR>", { desc = "Focus file explorer" })
