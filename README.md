@@ -193,7 +193,11 @@ server/tests — `Ctrl-j` to peek at logs, `Ctrl-k` back to code.
 | LSP servers & formatters | `:Mason`, then press `U` (update all) | When you notice a server lagging behind |
 | Treesitter parsers | `:TSUpdate` | After plugin updates, and always after upgrading Neovim itself |
 | Neovim | `brew upgrade neovim` (macOS) · re-run `install.sh` (Linux tarball installs) | When a new stable lands |
-| This config | `cd ~/.config/nvim && git pull` | Whenever you've pushed changes from another machine |
+| This config | `cd ~/.config/nvim && git pull` (or re-run `install.sh`) | Whenever you've pushed changes from another machine |
+
+Your config lives at `~/.config/nvim` and nowhere else — cloning this repo
+somewhere like `~/github/` gives you a copy to edit, but nvim will not read it.
+Push from the clone, pull in `~/.config/nvim`.
 
 If something breaks after an update: `:Lazy log` shows what changed, and
 `git checkout lazy-lock.json && :Lazy restore` rolls every plugin back to the

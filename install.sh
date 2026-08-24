@@ -177,6 +177,17 @@ fi
 if [ ! -d "$CONFIG_DIR" ]; then
     bold "Cloning config"
     git clone --depth 1 "$REPO" "$CONFIG_DIR"
+elif [ -d "${CONFIG_DIR}/.git" ]; then
+    # Re-running the installer on a machine that already has the config has to
+    # actually update it, otherwise you get "I ran install and my new keymaps
+    # aren't there". The second pull covers clones whose origin is the SSH URL
+    # on a machine with no key loaded.
+    bold "Updating config"
+    git -C "$CONFIG_DIR" pull --ff-only 2>/dev/null ||
+        git -C "$CONFIG_DIR" pull --ff-only "$REPO" main ||
+        warn "could not update ${CONFIG_DIR} — check: git -C ${CONFIG_DIR} status"
+else
+    warn "${CONFIG_DIR} exists but is not a git clone — delete it and re-run to get updates"
 fi
 
 bold "Installing plugins (headless)"
