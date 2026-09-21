@@ -6,7 +6,7 @@ Built for navigating large codebases, reviewing PRs without leaving the editor,
 and making surgical edits at typing speed. ~100 ms startup. Works on any Mac or
 Linux machine with one script.
 
-![Neovim 0.11+](https://img.shields.io/badge/Neovim-0.11%2B-57A143?logo=neovim&logoColor=white)
+![Neovim 0.12+](https://img.shields.io/badge/Neovim-0.12%2B-57A143?logo=neovim&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue)
 ![Lua](https://img.shields.io/badge/Lua-100%25-2C2D72?logo=lua)
 
@@ -23,10 +23,11 @@ git clone https://github.com/blankdean/tech-lead-nvim ~/.config/nvim
 ~/.config/nvim/install.sh
 ```
 
-The script installs dependencies (ripgrep, node, a Nerd Font — even Neovim
-itself if your distro's is too old), backs up any existing config, and
-pre-installs every plugin. Then set your terminal font to **JetBrainsMono Nerd
-Font** and run `nvim`. That's it.
+The script installs dependencies (ripgrep, fd, node, a Nerd Font — even a
+**native-arch** Neovim if Homebrew/distro nvim is too old or the wrong CPU),
+backs up any existing config, and pre-installs every plugin. Then set your
+terminal font to **JetBrainsMono Nerd Font** and run `nvim`. That's it. Same
+Lua config on Mac and Linux; `install.sh` is the only OS-specific piece.
 
 ## The greatest hits
 
@@ -262,7 +263,13 @@ Built to be safe on a work machine:
 
 - `lazy-lock.json` is committed — fresh installs get the exact tested plugin
   versions. `:Lazy update` when you want newer.
-- Linux clipboard needs `xclip` (X11) or `wl-clipboard` (Wayland).
+- Linux clipboard: `install.sh` pulls in `xclip` (X11) and `wl-clipboard`
+  (Wayland). Yank with `unnamedplus` then paste in any app.
+- Debian/Ubuntu: the `fd` binary is named `fdfind`; the installer symlinks
+  `~/.local/bin/fd` so Telescope find-files stays fast.
+- Apple Silicon with Intel Homebrew (`/usr/local`): the installer drops an
+  arm64 nvim + tree-sitter CLI in `~/.local/bin` so parsers load. Keep
+  `~/.local/bin` on your PATH (ahead of `/usr/local/bin`).
 - Harpoon jumps: `Space 1..4` works everywhere. The `Ctrl-1..4` variants only
   work in terminals speaking the kitty keyboard protocol (Ghostty, kitty,
   WezTerm) — macOS Terminal.app cannot send Ctrl+digit at all, and inside

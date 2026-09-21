@@ -52,6 +52,17 @@ opt.foldtext = "" -- keep the first line syntax-highlighted instead of "+-- 12 l
 
 opt.clipboard = "unnamedplus"
 opt.mouse = "a"
+
+-- Apple Silicon + leftover Intel Homebrew nvim: rust plugins (blink.cmp)
+-- cannot dlopen. Prefer ~/.local/bin/nvim (arm64).
+if jit.arch == "x64" and vim.uv.os_uname().machine == "arm64" then
+    vim.schedule(function()
+        vim.notify(
+            "This nvim is x86_64 on Apple Silicon. Use the arm64 build on PATH (~/.local/bin/nvim). In this shell: hash -r",
+            vim.log.levels.WARN
+        )
+    end)
+end
 opt.termguicolors = true
 opt.updatetime = 250
 opt.timeoutlen = 300

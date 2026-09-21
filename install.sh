@@ -5,7 +5,10 @@ set -euo pipefail
 
 REPO="https://github.com/blankdean/tech-lead-nvim"
 CONFIG_DIR="${HOME}/.config/nvim"
-NVIM_MIN_MINOR=11 # requires neovim >= 0.11
+NVIM_MIN_MINOR=12 # nvim-treesitter main requires neovim >= 0.12
+
+# Native binaries we drop in here must win over Intel Homebrew / distro copies.
+export PATH="${HOME}/.local/bin:${PATH}"
 
 bold() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 warn() { printf '\033[33mwarn:\033[0m %s\n' "$*"; }
@@ -15,46 +18,74 @@ warn() { printf '\033[33mwarn:\033[0m %s\n' "$*"; }
 nvim_ok() {
     command -v nvim >/dev/null 2>&1 || return 1
     local v minor
-    v="$(nvim --version | head -1 | sed 's/^NVIM v//')"
+    v="$(nvim --version 2>/dev/null | head -1 | sed 's/^NVIM v//')"
+    [ -n "$v" ] || return 1
     minor="$(echo "$v" | cut -d. -f2)"
     [ "$(echo "$v" | cut -d. -f1)" -gt 0 ] || [ "$minor" -ge "$NVIM_MIN_MINOR" ]
 }
 
-install_nvim_tarball() {
-    # Official release tarball into ~/.local — no sudo, works on any distro
-    local arch tar
-    case "$(uname -m)" in
-    x86_64) arch="linux-x86_64" ;;
-    aarch64 | arm64) arch="linux-arm64" ;;
-    *)
-        warn "unknown arch $(uname -m) — install neovim >= 0.11 manually"
-        return 1
-        ;;
-    esac
-    tar="nvim-${arch}.tar.gz"
-    bold "Installing Neovim (official tarball) to ~/.local/opt"
-    mkdir -p "${HOME}/.local/opt" "${HOME}/.local/bin"
-    curl -fsSL "https://github.com/neovim/neovim/releases/latest/download/${tar}" \
-        -o "/tmp/${tar}"
-    tar -xzf "/tmp/${tar}" -C "${HOME}/.local/opt"
-    ln -sf "${HOME}/.local/opt/nvim-${arch}/bin/nvim" "${HOME}/.local/bin/nvim"
-    rm -f "/tmp/${tar}"
-    case ":$PATH:" in
-    *":${HOME}/.local/bin:"*) ;;
-    *) warn 'add ~/.local/bin to your PATH (export PATH="$HOME/.local/bin:$PATH")' ;;
+# Intel Homebrew on Apple Silicon (or an x86 nvim under Rosetta) still reports
+# a fine version. Parsers and fzf-native then compile for the wrong CPU.
+nvim_arch_ok() {
+    command -v nvim >/dev/null 2>&1 || return 1
+    local bin info machine
+    bin="$(command -v nvim)"
+    info="$(file -b "$bin" 2>/dev/null || true)"
+    machine="$(uname -m)"
+    case "$machine" in
+    arm64 | aarch64) echo "$info" | grep -qiE 'arm64|aarch64' ;;
+    x86_64) echo "$info" | grep -qiE 'x86-64|x86_64' ;;
+    *) return 0 ;;
     esac
 }
 
+install_nvim_tarball() {
+    # Official release tarball into ~/.local — no sudo, native arch
+    local tar dest
+    case "$(uname -s)-$(uname -m)" in
+    Darwin-arm64) tar="nvim-macos-arm64.tar.gz" dest="nvim-macos-arm64" ;;
+    Darwin-x86_64) tar="nvim-macos-x86_64.tar.gz" dest="nvim-macos-x86_64" ;;
+    Linux-x86_64) tar="nvim-linux-x86_64.tar.gz" dest="nvim-linux-x86_64" ;;
+    Linux-aarch64 | Linux-arm64) tar="nvim-linux-arm64.tar.gz" dest="nvim-linux-arm64" ;;
+    *)
+        warn "unknown platform $(uname -s)/$(uname -m) — install neovim >= 0.${NVIM_MIN_MINOR} manually"
+        return 1
+        ;;
+    esac
+    bold "Installing Neovim (official tarball) to ~/.local/opt/${dest}"
+    mkdir -p "${HOME}/.local/opt" "${HOME}/.local/bin"
+    curl -fsSL "https://github.com/neovim/neovim/releases/latest/download/${tar}" \
+        -o "/tmp/${tar}"
+    if [ "$(uname -s)" = Darwin ]; then
+        xattr -c "/tmp/${tar}" 2>/dev/null || true
+    fi
+    rm -rf "${HOME}/.local/opt/${dest}"
+    tar -xzf "/tmp/${tar}" -C "${HOME}/.local/opt"
+    ln -sfn "${HOME}/.local/opt/${dest}/bin/nvim" "${HOME}/.local/bin/nvim"
+    rm -f "/tmp/${tar}"
+    hash -r 2>/dev/null || true
+}
+
+# nvim-treesitter (main) shells out to the native tree-sitter CLI. The npm
+# package of the same name is a Node wrapper and builds the wrong arch.
+tree_sitter_ok() {
+    command -v tree-sitter >/dev/null 2>&1 || return 1
+    local bin
+    bin="$(command -v tree-sitter)"
+    if head -n1 "$bin" 2>/dev/null | grep -qi node; then
+        return 1
+    fi
+    tree-sitter --version >/dev/null 2>&1
+}
+
 install_tree_sitter_cli() {
-    # nvim-treesitter (main branch) shells out to the tree-sitter CLI to
-    # build parsers — without it every :TSInstall fails with ENOENT
-    command -v tree-sitter >/dev/null 2>&1 && return 0
+    tree_sitter_ok && return 0
     local arch os asset
     case "$(uname -m)" in
     x86_64) arch="x64" ;;
     aarch64 | arm64) arch="arm64" ;;
     *)
-        warn "unknown arch — install tree-sitter CLI manually (npm i -g tree-sitter-cli)"
+        warn "unknown arch — install the native tree-sitter CLI (https://github.com/tree-sitter/tree-sitter/releases)"
         return 1
         ;;
     esac
@@ -63,11 +94,12 @@ install_tree_sitter_cli() {
     Linux) os="linux" ;;
     esac
     asset="tree-sitter-${os}-${arch}.gz"
-    bold "Installing tree-sitter CLI to ~/.local/bin"
+    bold "Installing native tree-sitter CLI to ~/.local/bin"
     mkdir -p "${HOME}/.local/bin"
     curl -fsSL "https://github.com/tree-sitter/tree-sitter/releases/latest/download/${asset}" |
         gunzip >"${HOME}/.local/bin/tree-sitter"
     chmod +x "${HOME}/.local/bin/tree-sitter"
+    hash -r 2>/dev/null || true
 }
 
 install_nerd_font_linux() {
@@ -79,6 +111,23 @@ install_nerd_font_linux() {
     tar -xJf /tmp/JetBrainsMono.tar.xz -C "${HOME}/.local/share/fonts"
     rm -f /tmp/JetBrainsMono.tar.xz
     fc-cache -f >/dev/null 2>&1 || true
+}
+
+# Debian/Ubuntu ship the binary as fdfind; telescope looks for `fd`.
+ensure_fd() {
+    command -v fd >/dev/null 2>&1 && return 0
+    if command -v fdfind >/dev/null 2>&1; then
+        mkdir -p "${HOME}/.local/bin"
+        ln -sfn "$(command -v fdfind)" "${HOME}/.local/bin/fd"
+        hash -r 2>/dev/null || true
+    fi
+}
+
+ensure_native_nvim() {
+    if nvim_ok && nvim_arch_ok; then
+        return 0
+    fi
+    install_nvim_tarball
 }
 
 # --- dependencies ----------------------------------------------------------
@@ -101,20 +150,23 @@ Darwin)
     done
     brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1 ||
         brew install --cask font-jetbrains-mono-nerd-font || warn "font install failed"
+    install_tree_sitter_cli
+    ensure_native_nvim
     ;;
 Linux)
     bold "Installing dependencies"
     if command -v apt-get >/dev/null 2>&1; then
         sudo apt-get update -qq
-        sudo apt-get install -y -qq git curl ripgrep fd-find nodejs npm gcc make unzip fontconfig xz-utils || true
+        sudo apt-get install -y -qq git curl ripgrep fd-find nodejs npm gcc make unzip fontconfig xz-utils xclip wl-clipboard xdg-utils || true
     elif command -v dnf >/dev/null 2>&1; then
-        sudo dnf install -y -q git curl ripgrep fd-find nodejs gcc make unzip fontconfig xz || true
+        sudo dnf install -y -q git curl ripgrep fd-find nodejs gcc make unzip fontconfig xz xclip wl-clipboard xdg-utils || true
     elif command -v pacman >/dev/null 2>&1; then
-        sudo pacman -S --needed --noconfirm git curl ripgrep fd nodejs npm gcc make unzip fontconfig xz || true
+        sudo pacman -S --needed --noconfirm git curl ripgrep fd nodejs npm gcc make unzip fontconfig xz xclip wl-clipboard xdg-utils || true
     else
-        warn "unknown package manager — ensure git, curl, ripgrep, node, gcc are installed"
+        warn "unknown package manager — ensure git, curl, ripgrep, node, gcc, xclip or wl-clipboard are installed"
     fi
-    nvim_ok || install_nvim_tarball
+    ensure_fd
+    nvim_ok && nvim_arch_ok || install_nvim_tarball
     install_tree_sitter_cli
     install_nerd_font_linux
     command -v gh >/dev/null 2>&1 || warn "gh CLI not installed — needed only for :Octo PR review (https://cli.github.com)"
@@ -130,6 +182,7 @@ nvim_ok || {
     echo "neovim >= 0.${NVIM_MIN_MINOR} required — install it and re-run"
     exit 1
 }
+nvim_arch_ok || warn "nvim is not native $(uname -m) — parsers may fail to load. Re-run after installing a native build."
 
 # --- preflight doctor -------------------------------------------------------
 # Everything nvim needs at runtime: cc compiles treesitter parsers, node runs
@@ -137,7 +190,7 @@ nvim_ok || {
 
 bold "Preflight check"
 missing=0
-for tool in git curl tar gzip unzip cc node npm rg tree-sitter; do
+for tool in git curl tar gzip unzip cc make node npm rg fd; do
     if command -v "$tool" >/dev/null 2>&1; then
         printf '  ok       %s\n' "$tool"
     else
@@ -145,15 +198,22 @@ for tool in git curl tar gzip unzip cc node npm rg tree-sitter; do
         missing=1
     fi
 done
+if tree_sitter_ok; then
+    printf '  ok       tree-sitter (native CLI)\n'
+else
+    printf '  MISSING  tree-sitter native CLI (npm wrapper is not enough)\n'
+    missing=1
+fi
 if [ "$missing" -eq 1 ]; then
     cat <<'EOF'
 
 Missing tools above will cause exactly these failures later:
-  - no cc            -> treesitter parser builds fail with ENOENT
-  - no tree-sitter   -> same ENOENT (parser generation needs the CLI;
-                        macOS: brew install tree-sitter)
+  - no cc / make     -> treesitter parsers and telescope-fzf-native fail to build
+  - no tree-sitter   -> parser generation ENOENT (needs the native CLI, not npm)
   - no node/npm      -> pyright, ts_ls, bashls, jsonls, yamlls won't install
   - no unzip/tar     -> mason can't unpack stylua, shfmt, and other binaries
+  - no fd            -> telescope find_files falls back to slow `find`
+                        (Debian/Ubuntu: apt install fd-find)
 Install them (apt/dnf/pacman/brew) and re-run.
 EOF
     exit 1
