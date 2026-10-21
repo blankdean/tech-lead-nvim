@@ -49,6 +49,7 @@ Leader is `Space`. Press it and pause — which-key shows you everything.
 | `Ctrl-h/j/k/l` | Move between splits **and** tmux panes |
 | `Space xx` | All diagnostics in one list |
 | `Space e` | File tree |
+| `Space o` | Toggle focus between the editor and the file tree / Git review panel |
 
 Full reference: **[CHEATSHEET.md](CHEATSHEET.md)**
 
@@ -154,6 +155,12 @@ For code symbols skip all that: `grn` renames via LSP, scope-aware, everywhere.
 - `Space gf` — full history of the current file; answers "why is this like this?"
 - `:Octo pr list` — browse PRs, check out, comment on lines, approve/request
   changes, all in-editor (needs `gh auth login`)
+- `Space o` — switch between the bottom review file list and the code window.
+  With the file tree open (`Space e`), switch between the sidebar and the editor.
+  Repeated presses return to the same code window; if both panels are open,
+  the most recently visited panel is used.
+- `Space gq` — close the entire Octo / Diffview review layout and return to
+  your editor tab, from either the file panel or a code window.
 - `Space gp` / `Space gb` — preview hunk / blame line
 - `Space gg` — lazygit for staging, committing, interactive rebase
 

@@ -118,7 +118,9 @@ map("n", "<leader>qQ", "<cmd>qa!<CR>", { desc = "Quit nvim, discard changes" })
 
 -- NvimTree
 map("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
-map("n", "<leader>o", ":NvimTreeFocus<CR>", { desc = "Focus file explorer" })
+local panel_focus = require("panel-focus")
+panel_focus.setup()
+map("n", "<leader>o", panel_focus.toggle, { desc = "Toggle focus between panel and editor" })
 
 -- Telescope
 map("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find files" })
@@ -130,7 +132,17 @@ map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Help tags" })
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>", { desc = "Recent files" })
 map("n", "<leader>fc", "<cmd>Telescope grep_string<CR>", { desc = "Find word under cursor" })
 
--- Git (gitsigns)
+-- Git
+-- Close the entire review tab from either the file panel or a diff window.
+map("n", "<leader>gq", function()
+    local reviews = package.loaded["octo.reviews"]
+    if reviews and reviews.get_current_review() then
+        reviews.close(vim.api.nvim_get_current_tabpage())
+    else
+        vim.cmd.DiffviewClose()
+    end
+end, { desc = "Close Git review layout" })
+
 map("n", "<leader>gp", ":Gitsigns preview_hunk<CR>", { desc = "Preview hunk" })
 map("n", "<leader>gb", ":Gitsigns blame_line<CR>", { desc = "Blame line" })
 map("n", "]h", ":Gitsigns next_hunk<CR>", { desc = "Next hunk" })

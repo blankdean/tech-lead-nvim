@@ -24,6 +24,7 @@ fuzzy-find everything else with Telescope.**
 | `Shift-h` / `Shift-l` | Previous / next buffer |
 | `Ctrl-o` / `Ctrl-i` | Jump back / forward through your jump history |
 | `<Space>e` | File tree (for browsing structure; use `ff` for opening files) |
+| `<Space>o` | Toggle focus: file tree / bottom Octo review panel ↔ last code window |
 
 **Telescope tricks** (inside any picker):
 - Type multiple words to narrow: `user auth` matches paths containing both.
@@ -201,7 +202,7 @@ VS Code-format JSON in `~/.config/nvim/snippets/`.
 | `<Space>gm` | Diff your branch against `origin/main` — **self-review before pushing** |
 | `<Space>gf` | Full history of the current file (each commit's diff) |
 | `<Space>gh` | Browsable repo history |
-| `<Space>gq` | Close diffview |
+| `<Space>gq` | Close the whole Octo / Diffview review layout; return to your editor tab |
 | `<Space>gp` | Preview the git hunk under the cursor |
 | `<Space>gb` | Blame the current line |
 | `<Space>gg` | Lazygit (stage, commit, push, rebase — full TUI) |
@@ -216,6 +217,10 @@ VS Code-format JSON in `~/.config/nvim/snippets/`.
 
 In a review: leave comments on lines with `ca` (comment add), navigate files in the
 review panel, then `:Octo review submit` (approve / comment / request changes).
+Use `<Space>o` to switch between the bottom file panel and the code window.
+With the file tree open, the same shortcut toggles sidebar/editor focus.
+If both panels are open, it returns to the most recently visited panel.
+Use `<Space>gq` from either pane to close the entire review and return to your editor tab.
 `:Octo pr create` opens a new PR without leaving nvim. For a quick look at a PR's
 diff without a full review: `:Octo pr checkout 42` then `<Space>gm`.
 
