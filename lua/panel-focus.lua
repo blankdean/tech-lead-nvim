@@ -12,11 +12,16 @@ local function window_kind(win)
 
     local buf = vim.api.nvim_win_get_buf(win)
     local ft = vim.bo[buf].filetype
-    if ft == "NvimTree" or ft == "octo_panel" then
+    if ft == "NvimTree" or ft == "octo_panel" or ft == "DiffviewFiles" then
         return "panel"
     end
-    -- Octo's old-code diff buffer is 'nofile', but is still an editor.
-    if vim.bo[buf].buftype == "" or vim.api.nvim_buf_get_name(buf):match("^octo://.*/review/.*/file/") then
+    -- Octo and Diffview revision buffers are read-only, but still code windows.
+    local name = vim.api.nvim_buf_get_name(buf)
+    if
+        vim.bo[buf].buftype == ""
+        or name:match("^octo://.*/review/.*/file/")
+        or (vim.bo[buf].buftype == "nowrite" and name:match("^diffview://"))
+    then
         return "editor"
     end
 end

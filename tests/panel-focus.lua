@@ -39,6 +39,25 @@ for _ = 1, 4 do
 end
 vim.api.nvim_win_close(tree, true)
 
+-- Branch comparisons use read-only revision buffers on both sides.
+vim.cmd("tabnew")
+local branch_left = vim.api.nvim_get_current_win()
+vim.api.nvim_buf_set_name(0, "diffview:///repo/.git/base/example.lua")
+vim.bo.buftype = "nowrite"
+local branch_right = split("rightbelow vsplit", "lua", "diffview:///repo/.git/head/example.lua", "nowrite")
+local branch_panel = split("topleft vsplit", "DiffviewFiles")
+for _, code in ipairs({ branch_left, branch_right }) do
+    focus(code)
+    for _ = 1, 3 do
+        toggle()
+        expect_focus(branch_panel, "Space o should focus the Diffview file panel")
+        toggle()
+        expect_focus(code, "Space o should return to the same branch diff window")
+    end
+end
+vim.cmd("tabclose")
+focus(editor)
+
 -- Octo has two code windows and a bottom panel; the old-code buffer is nofile.
 vim.api.nvim_buf_set_name(0, "octo://owner/repo/review/1/file/LEFT/example.lua")
 vim.bo.buftype = "nofile"

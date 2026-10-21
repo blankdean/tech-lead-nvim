@@ -24,7 +24,7 @@ fuzzy-find everything else with Telescope.**
 | `Shift-h` / `Shift-l` | Previous / next buffer |
 | `Ctrl-o` / `Ctrl-i` | Jump back / forward through your jump history |
 | `<Space>e` | File tree (for browsing structure; use `ff` for opening files) |
-| `<Space>o` | Toggle focus: file tree / bottom Octo review panel ↔ last code window |
+| `<Space>o` | Toggle focus: file tree / Octo / Diffview panel ↔ last code window |
 
 **Telescope tricks** (inside any picker):
 - Type multiple words to narrow: `user auth` matches paths containing both.
@@ -206,6 +206,11 @@ VS Code-format JSON in `~/.config/nvim/snippets/`.
 | `<Space>gp` | Preview the git hunk under the cursor |
 | `<Space>gb` | Blame the current line |
 | `<Space>gg` | Lazygit (stage, commit, push, rebase — full TUI) |
+
+Inside `<Space>gm` (Diffview), `<Space>o` toggles the file panel and the last
+code window. In the left file panel, `Enter` opens and focuses the selected diff;
+double-click or `gf` opens the editable local file in your editor tab. Double-click
+a directory to expand/collapse it. Deleted files can still be inspected with `Enter`.
 
 **Reviewing GitHub PRs** (octo.nvim, needs `gh auth login`):
 
