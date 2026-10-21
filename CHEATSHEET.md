@@ -206,6 +206,7 @@ VS Code-format JSON in `~/.config/nvim/snippets/`.
 | `<Space>gp` | Preview the git hunk under the cursor |
 | `<Space>gb` | Blame the current line |
 | `<Space>gg` | Lazygit (stage, commit, push, rebase — full TUI) |
+| `<Space>gy` | Copy the reviewed PR link, or the current branch's PR link |
 
 Inside `<Space>gm` (Diffview), `<Space>o` toggles the file panel and the last
 code window. In the left file panel, `Enter` opens and focuses the selected diff;
@@ -226,6 +227,8 @@ Use `<Space>o` to switch between the bottom file panel and the code window.
 With the file tree open, the same shortcut toggles sidebar/editor focus.
 If both panels are open, it returns to the most recently visited panel.
 Use `<Space>gq` from either pane to close the entire review and return to your editor tab.
+Use `<Space>gy` or `:Octo pr url` to copy the PR link from the review, overview,
+or a regular file. If there is no PR, it reports an error and keeps your clipboard.
 `:Octo pr create` opens a new PR without leaving nvim. For a quick look at a PR's
 diff without a full review: `:Octo pr checkout 42` then `<Space>gm`.
 

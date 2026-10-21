@@ -30,6 +30,13 @@ end
 
 local editor = vim.api.nvim_get_current_win()
 local tree = split("topleft vsplit", "NvimTree")
+local pr_url_called = false
+vim.api.nvim_create_user_command("Octo", function(args)
+    pr_url_called = args.args == "pr url"
+end, { nargs = "*" })
+focus(tree)
+vim.api.nvim_feedkeys(" gy", "xt", false)
+assert(pr_url_called, "Space gy should invoke the PR URL command from NvimTree")
 focus(editor)
 for _ = 1, 4 do
     toggle()

@@ -164,6 +164,8 @@ For code symbols skip all that: `grn` renames via LSP, scope-aware, everywhere.
   the most recently visited panel is used.
 - `Space gq` — close the entire Octo / Diffview review layout and return to
   your editor tab, from either the file panel or a code window.
+- `Space gy` — copy the PR link for sharing. Also works as `:Octo pr url` from
+  review panes or regular files; outside an Octo review, it uses the current branch.
 - `Space gp` / `Space gb` — preview hunk / blame line
 - `Space gg` — lazygit for staging, committing, interactive rebase
 

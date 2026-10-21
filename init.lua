@@ -142,6 +142,9 @@ map("n", "<leader>gq", function()
         vim.cmd.DiffviewClose()
     end
 end, { desc = "Close Git review layout" })
+-- Keep this in init.lua rather than Octo's lazy key list so Space g y also
+-- resolves correctly when a file-tree buffer has its own plain `gy` mapping.
+map("n", "<leader>gy", "<cmd>Octo pr url<CR>", { desc = "Copy PR link" })
 
 map("n", "<leader>gp", ":Gitsigns preview_hunk<CR>", { desc = "Preview hunk" })
 map("n", "<leader>gb", ":Gitsigns blame_line<CR>", { desc = "Blame line" })
