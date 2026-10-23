@@ -110,7 +110,7 @@ map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line down" })
 map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
 
 -- Closing windows: back to one file, or all the way out to the shell
--- (<Space>gr Octo review and grr references both spray windows/panels around)
+-- (<Space>gr PR diffs and grr references both open extra panels)
 map("n", "<leader>qo", "<cmd>cclose<CR><cmd>lclose<CR><cmd>only<CR>", { desc = "Close panels/splits, keep this file" })
 map("n", "<leader>qq", "<cmd>qa<CR>", { desc = "Quit nvim (prompts if unsaved)" })
 map("n", "<leader>qw", "<cmd>wqa<CR>", { desc = "Write all, then quit nvim" })
@@ -139,7 +139,10 @@ map("n", "<leader>gq", function()
     if reviews and reviews.get_current_review() then
         reviews.close(vim.api.nvim_get_current_tabpage())
     else
-        vim.cmd.DiffviewClose()
+        local lifecycle = package.loaded["codediff.ui.lifecycle"]
+        if lifecycle then
+            lifecycle.close(vim.api.nvim_get_current_tabpage())
+        end
     end
 end, { desc = "Close Git review layout" })
 -- Keep this in init.lua rather than Octo's lazy key list so Space g y also

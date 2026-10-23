@@ -24,7 +24,7 @@ fuzzy-find everything else with Telescope.**
 | `Shift-h` / `Shift-l` | Previous / next buffer |
 | `Ctrl-o` / `Ctrl-i` | Jump back / forward through your jump history |
 | `<Space>e` | File tree (for browsing structure; use `ff` for opening files) |
-| `<Space>o` | Toggle focus: file tree / Octo / Diffview panel ↔ last code window |
+| `<Space>o` | Toggle focus: file tree / review panel ↔ last code window |
 
 **Telescope tricks** (inside any picker):
 - Type multiple words to narrow: `user auth` matches paths containing both.
@@ -198,30 +198,33 @@ VS Code-format JSON in `~/.config/nvim/snippets/`.
 
 | Key | What it does |
 |-----|--------------|
-| `<Space>gd` | Diffview: every uncommitted change, side by side |
+| `<Space>gd` | Every uncommitted change in a single-pane diff |
 | `<Space>gm` | Diff your branch against `origin/main` — **self-review before pushing** |
 | `<Space>gf` | Full history of the current file (each commit's diff) |
 | `<Space>gh` | Browsable repo history |
-| `<Space>gq` | Close the whole Octo / Diffview review layout; return to your editor tab |
+| `<Space>gr` | Read the current or selected PR in a single-pane diff |
+| `<Space>gR` | Octo interactive review for comments and approvals (capital R) |
+| `<Space>gq` | Close the whole CodeDiff / Octo review layout; return to your editor tab |
 | `<Space>gp` | Preview the git hunk under the cursor |
 | `<Space>gb` | Blame the current line |
 | `<Space>gg` | Lazygit (stage, commit, push, rebase — full TUI) |
 | `<Space>gy` | Copy the reviewed PR link, or the current branch's PR link |
 
-Inside `<Space>gm` (Diffview), `<Space>o` toggles the file panel and the last
+Inside `<Space>gm` (CodeDiff), `<Space>o` toggles the file panel and the last
 code window. In the left file panel, `Enter` opens and focuses the selected diff;
 double-click or `gf` opens the editable local file in your editor tab. Double-click
 a directory to expand/collapse it. Deleted files can still be inspected with `Enter`.
 
-**Reviewing GitHub PRs** (octo.nvim, needs `gh auth login`):
+**Reviewing GitHub PRs** (needs `gh auth login`):
 
 ```
 :Octo pr list          " browse open PRs (or <Space>gP)
-:Octo pr checkout 42   " check the PR out locally
-<Space>gr              " start a review — files open as diffs
+<Space>gr              " read the selected/current PR as a single-pane diff
+<Space>gR              " open Octo's interactive review for comments/approval
 ```
 
-In a review: leave comments on lines with `ca` (comment add), navigate files in the
+In an Octo interactive review: leave comments with `<Space>ca` (use `V` first for
+multiple lines) or suggestions with `<Space>sa`, save with `:w`, navigate files in the
 review panel, then `:Octo review submit` (approve / comment / request changes).
 Use `<Space>o` to switch between the bottom file panel and the code window.
 With the file tree open, the same shortcut toggles sidebar/editor focus.
@@ -229,6 +232,10 @@ If both panels are open, it returns to the most recently visited panel.
 Use `<Space>gq` from either pane to close the entire review and return to your editor tab.
 Use `<Space>gy` or `:Octo pr url` to copy the PR link from the review, overview,
 or a regular file. If there is no PR, it reports an error and keeps your clipboard.
+Octo's interactive review still uses two code panes; it has no unified layout.
+The default `<Space>gr` reader uses CodeDiff and keeps the reviewed PR link/context.
+CodeDiff's merge-conflict tool is also a separate multi-pane workflow. Lazygit's
+diff content is unified; staged and unstaged states may still occupy separate panels.
 `:Octo pr create` opens a new PR without leaving nvim. For a quick look at a PR's
 diff without a full review: `:Octo pr checkout 42` then `<Space>gm`.
 
@@ -249,7 +256,7 @@ slim bottom pane for the dev server / logs / tests. `Ctrl-j` down to check logs,
 
 ## Closing windows
 
-`<Space>gr` (Octo PR review) and `grr` (references) both open extra panels.
+`<Space>gr` (PR diff) and `grr` (references) both open extra panels.
 Getting back out:
 
 | Key | What it does |
@@ -259,7 +266,7 @@ Getting back out:
 | `<Space>qw` | Write every buffer, then quit |
 | `<Space>qQ` | Quit and throw away unsaved changes |
 | `<Ctrl-w>o` | Same as `<Space>qo`, built-in vim version |
-| `<Space>gq` | Close a diffview / Octo review layout specifically |
+| `<Space>gq` | Close a CodeDiff / Octo review layout specifically |
 
 ## Terminal
 

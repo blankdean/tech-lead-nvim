@@ -46,20 +46,20 @@ for _ = 1, 4 do
 end
 vim.api.nvim_win_close(tree, true)
 
--- Branch comparisons use read-only revision buffers on both sides.
+-- Inline comparisons have one code window plus an explorer or history panel.
 vim.cmd("tabnew")
-local branch_left = vim.api.nvim_get_current_win()
-vim.api.nvim_buf_set_name(0, "diffview:///repo/.git/base/example.lua")
+local branch_code = vim.api.nvim_get_current_win()
+vim.api.nvim_buf_set_name(0, "codediff:///repo/head/example.lua")
 vim.bo.buftype = "nowrite"
-local branch_right = split("rightbelow vsplit", "lua", "diffview:///repo/.git/head/example.lua", "nowrite")
-local branch_panel = split("topleft vsplit", "DiffviewFiles")
-for _, code in ipairs({ branch_left, branch_right }) do
-    focus(code)
+local branch_panel = split("topleft vsplit", "codediff-explorer")
+for _, ft in ipairs({ "codediff-explorer", "codediff-history" }) do
+    vim.bo[vim.api.nvim_win_get_buf(branch_panel)].filetype = ft
+    focus(branch_code)
     for _ = 1, 3 do
         toggle()
-        expect_focus(branch_panel, "Space o should focus the Diffview file panel")
+        expect_focus(branch_panel, "Space o should focus the CodeDiff panel")
         toggle()
-        expect_focus(code, "Space o should return to the same branch diff window")
+        expect_focus(branch_code, "Space o should return to the inline diff window")
     end
 end
 vim.cmd("tabclose")

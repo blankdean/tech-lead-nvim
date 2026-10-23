@@ -12,15 +12,20 @@ local function window_kind(win)
 
     local buf = vim.api.nvim_win_get_buf(win)
     local ft = vim.bo[buf].filetype
-    if ft == "NvimTree" or ft == "octo_panel" or ft == "DiffviewFiles" then
+    if ft == "NvimTree" or ft == "octo_panel" or ft == "codediff-explorer" or ft == "codediff-history" then
         return "panel"
     end
-    -- Octo and Diffview revision buffers are read-only, but still code windows.
+    local lifecycle = package.loaded["codediff.ui.lifecycle"]
+    local session = lifecycle and lifecycle.get_session(vim.api.nvim_get_current_tabpage())
+    if session and (win == session.modified_win or win == session.original_win) then
+        return "editor"
+    end
+    -- Octo and CodeDiff revision buffers are read-only, but still code windows.
     local name = vim.api.nvim_buf_get_name(buf)
     if
         vim.bo[buf].buftype == ""
         or name:match("^octo://.*/review/.*/file/")
-        or (vim.bo[buf].buftype == "nowrite" and name:match("^diffview://"))
+        or (vim.bo[buf].buftype == "nowrite" and name:match("^codediff://"))
     then
         return "editor"
     end

@@ -8,7 +8,19 @@ return {
         indent = { enabled = true },
         notifier = { enabled = true, timeout = 3000 },
         terminal = { enabled = true },
-        lazygit = { enabled = true },
+        lazygit = {
+            enabled = true,
+            config = {
+                gui = { splitDiff = "auto" },
+                git = {
+                    paging = {
+                        pager = "cat",
+                        externalDiffCommand = "",
+                        useExternalDiffGitConfig = false,
+                    },
+                },
+            },
+        },
         dashboard = {
             enabled = true,
             sections = {

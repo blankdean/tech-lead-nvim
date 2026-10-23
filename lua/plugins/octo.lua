@@ -1,5 +1,9 @@
 local function copy_pr_url()
     local utils = require("octo.utils")
+    if vim.t.unified_review_pr then
+        utils.copy_url(vim.t.unified_review_pr.url)
+        return
+    end
     local buffer = utils.get_current_buffer()
     if buffer and buffer:isPullRequest() then
         utils.copy_url(buffer.node.url)
@@ -49,6 +53,12 @@ return {
     },
     keys = {
         { "<leader>gP", "<cmd>Octo pr list<CR>", desc = "List GitHub PRs" },
-        { "<leader>gr", "<cmd>Octo review<CR>", desc = "Review current PR" },
+        {
+            "<leader>gR",
+            function()
+                require("unified-review").open_octo()
+            end,
+            desc = "Interactive PR review (Octo)",
+        },
     },
 }

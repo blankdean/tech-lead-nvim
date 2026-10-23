@@ -49,7 +49,7 @@ Leader is `Space`. Press it and pause — which-key shows you everything.
 | `Ctrl-h/j/k/l` | Move between splits **and** tmux panes |
 | `Space xx` | All diagnostics in one list |
 | `Space e` | File tree |
-| `Space o` | Toggle focus between the editor and the file tree / Octo / Diffview panel |
+| `Space o` | Toggle focus between the editor and the file tree / review panel |
 
 Full reference: **[CHEATSHEET.md](CHEATSHEET.md)**
 
@@ -151,23 +151,35 @@ For code symbols skip all that: `grn` renames via LSP, scope-aware, everywhere.
 
 ### Review PRs without leaving the editor
 
-- `Space gm` — your branch vs main, side-by-side. Self-review before every push.
+- `Space gd` / `Space gm` — working-tree / branch changes in one code pane,
+  with additions highlighted inline and removed lines shown in place.
 - In the `Space gm` file panel: `Enter` opens and focuses the selected diff;
   double-click or `gf` opens the editable local file in your editor tab.
   `Space o` switches between the file panel and the last diff window.
 - `Space gf` — full history of the current file; answers "why is this like this?"
 - `:Octo pr list` — browse PRs, check out, comment on lines, approve/request
   changes, all in-editor (needs `gh auth login`)
+- `Space gr` — read the current or selected PR in CodeDiff's single-pane view.
+  It fetches the PR without checking out its branch.
+- `Space gR` (capital R) — Octo's interactive review for inline comments and
+  approvals. From a CodeDiff PR tab, it targets that same PR. Octo does not support
+  single-pane interactive reviews, so this explicit workflow still uses its split.
 - `Space o` — switch between the bottom review file list and the code window.
   With the file tree open (`Space e`), switch between the sidebar and the editor.
   Repeated presses return to the same code window; if both panels are open,
   the most recently visited panel is used.
-- `Space gq` — close the entire Octo / Diffview review layout and return to
+- `Space gq` — close the entire CodeDiff / Octo review layout and return to
   your editor tab, from either the file panel or a code window.
 - `Space gy` — copy the PR link for sharing. Also works as `:Octo pr url` from
   review panes or regular files; outside an Octo review, it uses the current branch.
 - `Space gp` / `Space gb` — preview hunk / blame line
 - `Space gg` — lazygit for staging, committing, interactive rebase
+
+CodeDiff replaces Diffview for unified diffs, including history. Its matching
+native diff library downloads on first use; the plugin version is pinned in
+`lazy-lock.json`. Merge-conflict resolution remains a dedicated multi-pane tool.
+Lazygit uses its native unified renderer; when a file has both staged and unstaged
+changes, Lazygit may still show those two separate states.
 
 ## What's inside
 
@@ -178,7 +190,7 @@ For code symbols skip all that: `grn` renames via LSP, scope-aware, everywhere.
 [blink.cmp](https://github.com/Saghen/blink.cmp) ·
 [conform](https://github.com/stevearc/conform.nvim) ·
 [gitsigns](https://github.com/lewis6991/gitsigns.nvim) ·
-[diffview](https://github.com/sindrets/diffview.nvim) ·
+[CodeDiff](https://github.com/esmuellert/codediff.nvim) ·
 [octo](https://github.com/pwntester/octo.nvim) ·
 [trouble](https://github.com/folke/trouble.nvim) ·
 [snacks](https://github.com/folke/snacks.nvim) ·
