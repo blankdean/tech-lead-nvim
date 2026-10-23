@@ -1,6 +1,7 @@
 return {
     "saghen/blink.cmp",
     version = "1.*",
+    event = "InsertEnter",
     dependencies = { "rafamadriz/friendly-snippets" },
     opts = {
         -- <CR> accepts, <C-n>/<C-p> or arrows select, <C-e> dismisses

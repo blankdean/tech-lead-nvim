@@ -5,8 +5,11 @@ return {
     },
     {
         "WhoIsSethDaniel/mason-tool-installer.nvim",
+        event = "VeryLazy",
         dependencies = { "mason-org/mason.nvim" },
         opts = {
+            -- These are formatter package names; LSP/DAP name translation is unused.
+            integrations = { ["mason-lspconfig"] = false, ["mason-null-ls"] = false, ["mason-nvim-dap"] = false },
             -- Formatters conform.nvim shells out to (not LSP servers, so
             -- mason-lspconfig below won't install them)
             ensure_installed = { "stylua", "prettier", "shfmt" },
@@ -16,6 +19,8 @@ return {
         "neovim/nvim-lspconfig",
         event = { "BufReadPre", "BufNewFile" },
         dependencies = {
+            -- Blink advertises completion capabilities before servers initialize.
+            "saghen/blink.cmp",
             "mason-org/mason.nvim",
             "mason-org/mason-lspconfig.nvim",
             "b0o/schemastore.nvim",

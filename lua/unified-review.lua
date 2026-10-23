@@ -1,12 +1,20 @@
 local M = {}
 local pull_requests = {}
 
+local function error_message(message)
+    vim.notify(message, vim.log.levels.ERROR, { title = "PR review" })
+end
+
 function M.open_pr()
-    local utils = require("octo.utils")
-    local buffer = utils.get_current_buffer()
-    local review = require("octo.reviews").get_current_review()
+    -- Reading a PR should not load Octo or run its blocking `gh auth status`.
+    -- Reuse Octo's selected PR only when its UI is already loaded.
+    local utils = package.loaded["octo.utils"]
+    local reviews = package.loaded["octo.reviews"]
+    local buffer = utils and utils.get_current_buffer()
+    local review = reviews and reviews.get_current_review()
     local context = vim.t.unified_review_pr
-    local args = { "pr", "view" }
+    local cwd = vim.fn.getcwd()
+    local args = { "gh", "pr", "view" }
     if buffer and buffer:isPullRequest() then
         table.insert(args, buffer.node.url)
     elseif review then
@@ -15,36 +23,67 @@ function M.open_pr()
         table.insert(args, context.url)
     end
     vim.list_extend(args, { "--json", "number,url,headRefOid" })
-    require("octo.gh").run({
-        args = args,
-        cb = function(stdout, stderr, status)
-            if status ~= 0 then
-                utils.error(vim.trim(stderr) ~= "" and vim.trim(stderr) or "No PR found for the current branch")
+    vim.system(
+        args,
+        { cwd = cwd, text = true },
+        vim.schedule_wrap(function(result)
+            if result.code ~= 0 then
+                error_message(
+                    vim.trim(result.stderr or "") ~= "" and vim.trim(result.stderr)
+                        or "No PR found for the current branch"
+                )
                 return
             end
-            local ok, pr = pcall(vim.json.decode, stdout)
+            local ok, pr = pcall(vim.json.decode, result.stdout or "")
             if not ok or type(pr) ~= "table" or not tonumber(pr.number) or not pr.url or not pr.headRefOid then
-                utils.error("GitHub did not return PR details")
+                error_message("GitHub did not return PR details")
                 return
             end
             local host, repo = pr.url:match("^https?://([^/]+)/([^/]+/[^/]+)/pull/%d+$")
-            local remote
-            for name, info in pairs(utils.parse_git_remote()) do
-                if repo and info.repo and info.repo:lower() == repo:lower() and info.host == host then
-                    remote = name
-                    if name == "origin" then
-                        break
+            vim.system(
+                { "git", "remote", "-v" },
+                { cwd = cwd, text = true },
+                vim.schedule_wrap(function(remotes)
+                    if remotes.code ~= 0 then
+                        error_message(vim.trim(remotes.stderr or "Could not read Git remotes"))
+                        return
                     end
-                end
-            end
-            if not remote then
-                utils.error("No local Git remote matches the PR repository: " .. pr.url)
-                return
-            end
-            pull_requests[pr.headRefOid] = pr
-            vim.cmd("CodeDiff pr " .. tonumber(pr.number) .. " --remote " .. vim.fn.fnameescape(remote))
-        end,
-    })
+                    local remote
+                    for line in (remotes.stdout or ""):gmatch("[^\n]+") do
+                        local name, url = line:match("^(%S+)%s+(%S+)%s+%(fetch%)")
+                        if name then
+                            url = url:gsub("%.git/?$", ""):gsub("/$", "")
+                            url = url:gsub("^[%w+.-]+://", ""):gsub("^[^@/]+@", "")
+                            local remote_host, remote_repo = url:match("^([^/:]+)[:/](.+)$")
+                            -- Preserve configured SSH aliases when Octo is in use.
+                            local config = package.loaded["octo.config"]
+                            local aliases = config and config.values.ssh_aliases or {}
+                            remote_host = aliases[remote_host] or remote_host
+                            if repo and remote_repo and remote_repo:lower() == repo:lower() and remote_host == host then
+                                remote = name
+                                if name == "origin" then
+                                    break
+                                end
+                            end
+                        end
+                    end
+                    if not remote then
+                        error_message("No local Git remote matches the PR repository: " .. pr.url)
+                        return
+                    end
+                    pull_requests[pr.headRefOid] = pr
+                    vim.cmd(
+                        "CodeDiff pr "
+                            .. tonumber(pr.number)
+                            .. " --remote "
+                            .. vim.fn.fnameescape(remote)
+                            .. " --repo "
+                            .. vim.fn.fnameescape(cwd)
+                    )
+                end)
+            )
+        end)
+    )
 end
 
 function M.open_octo()
