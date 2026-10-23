@@ -176,10 +176,14 @@ For code symbols skip all that: `grn` renames via LSP, scope-aware, everywhere.
 - `Space gg` — lazygit for staging, committing, interactive rebase
 
 CodeDiff replaces Diffview for unified diffs, including history. Its matching
-native diff library downloads on first use; the plugin version is pinned in
+native diff library downloads during `:Lazy sync` (or on first use); the plugin version is pinned in
 `lazy-lock.json`. Merge-conflict resolution remains a dedicated multi-pane tool.
 Lazygit uses its native unified renderer; when a file has both staged and unstaged
 changes, Lazygit may still show those two separate states.
+
+If a library download fails, run `:Lazy build codediff.nvim` with network access
+and restart Neovim. This also avoids repeated “loop or previous error loading
+module” messages from a failed first load.
 
 ## What's inside
 

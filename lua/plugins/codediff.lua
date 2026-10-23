@@ -2,6 +2,14 @@ return {
     "esmuellert/codediff.nvim",
     version = "v4.0.6",
     cmd = "CodeDiff",
+    -- Install the native library during :Lazy sync/build, before UI modules load.
+    build = function(plugin)
+        vim.opt.rtp:append(plugin.dir)
+        local ok, err = require("codediff.core.installer.libvscode_diff").install({ silent = true, force = true })
+        if not ok then
+            error(err)
+        end
+    end,
     opts = {
         diff = { layout = "inline" },
         explorer = {
@@ -19,6 +27,22 @@ return {
         },
     },
     config = function(_, opts)
+        -- A failed first-use download otherwise leaves a chain of failed Lua
+        -- modules behind, causing misleading "loop or previous error" messages.
+        local installer = require("codediff.core.installer.libvscode_diff")
+        if installer.needs_update() then
+            local ok, err = installer.install({ silent = false })
+            if not ok then
+                local message = "CodeDiff library installation failed: "
+                    .. tostring(err)
+                    .. "\nRun :Lazy build codediff.nvim with network access, then restart Neovim."
+                vim.api.nvim_create_user_command("CodeDiff", function()
+                    vim.notify(message, vim.log.levels.ERROR)
+                end, { nargs = "*", bang = true, range = true, force = true })
+                vim.notify(message, vim.log.levels.ERROR)
+                return
+            end
+        end
         require("codediff").setup(opts)
         require("unified-review").setup()
     end,
